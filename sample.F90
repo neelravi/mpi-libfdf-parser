@@ -39,11 +39,14 @@ module mpi_write
   integer, parameter   :: sp = kind(1.0)
   integer, parameter   :: dp = kind(1.0d0)
   integer              :: ounit = 6  ! for the time being
-  character(len=100)   :: format_real    = '(A, T40, ":: ", T50, F)'
-  character(len=100)   :: format_realdp  = '(A, T40, ":: ", T42, F25.16)'
+  character(len=100)   :: format_single  = '(A, T40, ":: ", T50, G0)'
+  character(len=100)   :: format_double  = '(A, T40, ":: ", T50, G0)'
   character(len=100)   :: format_int     = '(A, T40, ":: ", T50, I0)'
   character(len=100)   :: format_string  = '(A, T40, ":: ", T50, A)'
   character(len=100)   :: format_logical = '(A, T40, ":: ", T50, L1)'
+  character(len=100)   :: format_list_int    = '(A, T40, ":: ", T50, 100(I0,:,", "))'
+  character(len=100)   :: format_list_single = '(A, T40, ":: ", T50, 100(G0,:,", "))'
+  character(len=100)   :: format_list_double = '(A, T40, ":: ", T50, 100(G0,:,", "))'
 
   private
   public :: mpiwrite
@@ -54,6 +57,9 @@ module mpi_write
     module procedure mpi_write_realdp
     module procedure mpi_write_string
     module procedure mpi_write_logical
+    module procedure mpi_write_list_integer
+    module procedure mpi_write_list_single
+    module procedure mpi_write_list_double
   end interface mpiwrite
 
 contains
@@ -74,7 +80,7 @@ contains
     real(sp), intent(in)          :: value
     integer                       :: iostat
     if (wid) then
-      write(ounit,format_real,iostat=iostat) message, value
+      write(ounit,format_single,iostat=iostat) message, value
     endif
     if (iostat .ne. 0) stop "Error in writing to the output file "
     mpi_write_real = iostat
@@ -86,7 +92,7 @@ contains
     real(dp), intent(in)          :: value
     integer                       :: iostat
     if (wid) then
-      write(ounit,format_realdp,iostat=iostat) message, value
+      write(ounit,format_double,iostat=iostat) message, value
     endif
     if (iostat .ne. 0) stop "Error in writing to the output file "
     mpi_write_realdp = iostat
@@ -94,9 +100,9 @@ contains
   end function mpi_write_realdp
 
   integer function mpi_write_string(message, value )
-    character(len=*), intent(in)  :: message
-    character(len=*), intent(in)  :: value
-    integer                       :: iostat
+    character(len=*), intent(in)            :: message
+    character(len=*), intent(in)            :: value
+    integer                                 :: iostat
     if (wid) then
       write(ounit,format_string,iostat=iostat) message, value
     endif
@@ -116,6 +122,43 @@ contains
     mpi_write_logical = iostat
     return
   end function mpi_write_logical
+
+  integer function mpi_write_list_integer(message, value)
+    character(len=*), intent(in)    :: message
+    integer, intent(in),dimension(:):: value
+    integer                         :: iostat
+    if (wid) then
+      write(ounit,fmt=format_list_int,iostat=iostat) message, value
+    endif
+    if (iostat .ne. 0) stop "Error in writing list of integers to the output file "
+    mpi_write_list_integer = iostat
+    return
+  end function mpi_write_list_integer
+
+  integer function mpi_write_list_single(message, value)
+    character(len=*), intent(in)    :: message
+    real, intent(in),dimension(:)   :: value
+    integer                         :: iostat
+    if (wid) then
+      write(ounit,fmt=format_list_single,iostat=iostat) message, value
+    endif
+    if (iostat .ne. 0) stop "Error in writing list of floats to the output file "
+    mpi_write_list_single = iostat
+    return
+  end function mpi_write_list_single
+
+  integer function mpi_write_list_double(message, value)
+    character(len=*), intent(in)        :: message
+    real(dp), intent(in),dimension(:)   :: value
+    integer                             :: iostat
+    if (wid) then
+      write(ounit,fmt=format_list_double,iostat=iostat) message, value
+    endif
+    if (iostat .ne. 0) stop "Error in writing list of doubles to the output file "
+    mpi_write_list_double = iostat
+    return
+  end function mpi_write_list_double
+
 
 end module mpi_write
 
@@ -141,6 +184,9 @@ PROGRAM SAMPLE
   real(sp)                   :: wmix
   real(dp)                   :: cutoff, phonon_energy, factor
   real(dp)                   :: xa(3, maxa)
+  real(dp)                   :: listdp(maxa)
+  real(sp)                   :: listr(maxa)
+  real                       :: calibration
   type(block_fdf)            :: bfdf
   type(parsed_line), pointer :: pline
 
@@ -157,19 +203,51 @@ PROGRAM SAMPLE
 
 
 ! Handle/Use fdf structure
-!  if (fdf_defined('new-style')) write(6,*) 'New-style stuff'
+!  if (fdf_defined('new-style')) err = mpiwrite("[strings] just a string without value", "")
 
   na = fdf_integer('NumberOfAtoms', 0)
-  err = mpiwrite("Number of atoms", na)
+  err = mpiwrite("[integer] Number of atoms", na)
 
   fname = fdf_string('NameOfFile', 'whatever')
-  err = mpiwrite("Name of the file", fname)
+  err = mpiwrite("[strings] Name of the file", fname)
 
   cutoff = fdf_physical('MeshCutoff', 8.d0, 'Ry')
-  err = mpiwrite("energy cutoff", cutoff)
+  err = mpiwrite("[floats dp] energy cutoff", cutoff)
+
+  calibration = fdf_single('calibration', 0.0)
+  err = mpiwrite("[floats sp] calibration", calibration)
 
   debug = fdf_boolean('Debug', .TRUE.)
-  err = mpiwrite("debug flag", debug)
+  err = mpiwrite("[boolean] debug flag", debug)
+
+
+
+! list of integers
+  if ( fdf_islist('MyList') ) then
+     na = -1
+     call fdf_list('MyList',na,isa)
+     call fdf_list('MyList',na,isa)
+     err = mpiwrite("[list][integers] list of integers   ", isa(1:na))
+  else
+     write(*,*)'MyList was not recognized'
+  end if
+
+! list of single precision floats NOT IMPLEMENTED YET
+  ! if ( fdf_islreal('MyListReal') .and. fdf_islist('MyListReal') &
+  !     .and. (.not. fdf_islinteger('MyListReal')) ) then
+  !   na = -1
+  !   call fdf_list('MyListReal',na,listr)
+  !   if ( na < 2 ) stop 1
+  !   call fdf_list('MyListReal',na,listr)
+  !   err = mpiwrite("[list][floats] list of single floats   ", listr(1:na))
+  ! else
+  !   write(*,*)'MyListR was not recognized'
+  !   stop 1
+  ! end if
+
+
+
+
 
 
 
@@ -303,15 +381,7 @@ PROGRAM SAMPLE
 !      end do
 !   end if
 
-!   if ( fdf_islist('MyList') ) then
-!      na = -1
-!      call fdf_list('MyList',na,isa)
-!      write(*,'(tr5,a,i0,a)') 'MyList has ',na,' entries'
-!      call fdf_list('MyList',na,isa)
-!      write(*,'(tr5,a,1000(tr1,i0))') 'MyList: ',isa(1:na)
-!   else
-!      write(*,*)'MyList was not recognized'
-!   end if
+
 
 !   if ( fdf_islist('externalentry') ) then
 !      write(*,*) 'externalentry is a list'
