@@ -36,9 +36,14 @@ end module mpiconf
 module mpi_write
   use mpiconf,      only: wid
   implicit none
-  integer, parameter            :: sp = kind(1.0)
-  integer, parameter            :: dp = kind(1.0d0)
-!  logical                       :: wid
+  integer, parameter   :: sp = kind(1.0)
+  integer, parameter   :: dp = kind(1.0d0)
+  integer              :: ounit = 6  ! for the time being
+  character(len=100)   :: format_real    = '(A, T40, ":: ", T50, F)'
+  character(len=100)   :: format_realdp  = '(A, T40, ":: ", T42, F25.16)'
+  character(len=100)   :: format_int     = '(A, T40, ":: ", T50, I0)'
+  character(len=100)   :: format_string  = '(A, T40, ":: ", T50, A)'
+  character(len=100)   :: format_logical = '(A, T40, ":: ", T50, L1)'
 
   private
   public :: mpiwrite
@@ -53,56 +58,62 @@ module mpi_write
 
 contains
   integer function mpi_write_integer(message, value )
-    character(len=*)  :: message
-    integer           :: value, err
+    character(len=*), intent(in)  :: message
+    integer, intent(in)           :: value
+    integer                       :: iostat
     if (wid) then
-      write(6,*) message, value
+      write(ounit,fmt=format_int,iostat=iostat) message, value
     endif
-    mpi_write_integer = 0
+    if (iostat .ne. 0) stop "Error in writing to the output file "
+    mpi_write_integer = iostat
     return
   end function mpi_write_integer
 
   integer function mpi_write_real(message, value )
-    character(len=*)  :: message
-    real(sp)              :: value
-    integer           :: err
+    character(len=*), intent(in)  :: message
+    real(sp), intent(in)          :: value
+    integer                       :: iostat
     if (wid) then
-      write(6,*) message, value
+      write(ounit,format_real,iostat=iostat) message, value
     endif
-    mpi_write_real = 0
+    if (iostat .ne. 0) stop "Error in writing to the output file "
+    mpi_write_real = iostat
     return
   end function mpi_write_real
 
   integer function mpi_write_realdp(message, value )
-    character(len=*)  :: message
-    real(dp)          :: value
-    integer           :: err
+    character(len=*), intent(in)  :: message
+    real(dp), intent(in)          :: value
+    integer                       :: iostat
     if (wid) then
-      write(6,*) message, value
+      write(ounit,format_realdp,iostat=iostat) message, value
     endif
-    mpi_write_realdp = 0
+    if (iostat .ne. 0) stop "Error in writing to the output file "
+    mpi_write_realdp = iostat
     return
   end function mpi_write_realdp
 
   integer function mpi_write_string(message, value )
-    character(len=*)  :: message
-    character(len=*)  :: value
-    integer           :: err
+    character(len=*), intent(in)  :: message
+    character(len=*), intent(in)  :: value
+    integer                       :: iostat
     if (wid) then
-      write(6,*) message, value
+      write(ounit,format_string,iostat=iostat) message, value
     endif
-    mpi_write_string = 0
+    if (iostat .ne. 0) stop "Error in writing to the output file "
+    mpi_write_string = iostat
     return
   end function mpi_write_string
 
   integer function mpi_write_logical(message, value )
-    character(len=*)  :: message
-    logical           :: value
-    integer           :: err
+    character(len=*), intent(in)  :: message
+    logical, intent(in)           :: value
+    integer                       :: iostat
     if (wid) then
-      write(6,*) message, value
+      write(ounit,format_logical,iostat=iostat) message, value
     endif
-    mpi_write_logical = 0
+    if (iostat .ne. 0) stop "Error in writing to the output file "
+    mpi_write_logical = iostat
     return
   end function mpi_write_logical
 
@@ -122,7 +133,8 @@ PROGRAM SAMPLE
 !--------------------------------------------------------------- Local Variables
   integer, parameter         :: maxa = 100
   logical                    :: doit, debug, mpiflag
-  character(20)              :: fname, axis, status
+  character(len=100)         :: fname
+  character(len=2)           :: axis, status
   character(2)               :: symbol(maxa)
   integer(sp)                :: i, j, ia, na, external_entry
   integer(sp)                :: isa(maxa)
@@ -148,16 +160,16 @@ PROGRAM SAMPLE
 !  if (fdf_defined('new-style')) write(6,*) 'New-style stuff'
 
   na = fdf_integer('NumberOfAtoms', 0)
-  err = mpiwrite("Number of atoms via interface ", na)
+  err = mpiwrite("Number of atoms", na)
 
   fname = fdf_string('NameOfFile', 'whatever')
-  err = mpiwrite("Name of the file via interface ", fname)
+  err = mpiwrite("Name of the file", fname)
 
   cutoff = fdf_physical('MeshCutoff', 8.d0, 'Ry')
-  err = mpiwrite("energy cutoff via interface ", cutoff)
+  err = mpiwrite("energy cutoff", cutoff)
 
   debug = fdf_boolean('Debug', .TRUE.)
-  err = mpiwrite("debug flag via interface ", debug)
+  err = mpiwrite("debug flag", debug)
 
 
 

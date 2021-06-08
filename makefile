@@ -129,3 +129,4 @@ clean:
 	rm -f *.o *.mod libfdf.a
 	rm -f sample sample_mpi sample_cluster sample_blocking
 	rm -f fdf.debug* sample.out* sample.fdf.*
+	rm -f *.i90
