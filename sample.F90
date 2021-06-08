@@ -39,15 +39,15 @@ module mpi_write
   integer, parameter   :: sp = kind(1.0)
   integer, parameter   :: dp = kind(1.0d0)
   integer              :: ounit = 6  ! for the time being
-  character(len=100)   :: format_single  = '(A, T40, ":: ", T50, G0)'
-  character(len=100)   :: format_double  = '(A, T40, ":: ", T50, G0)'
-  character(len=100)   :: format_int     = '(A, T40, ":: ", T50, I0)'
-  character(len=100)   :: format_string  = '(A, T40, ":: ", T50, A)'
-  character(len=100)   :: format_logical = '(A, T40, ":: ", T50, L1)'
-  character(len=100)   :: format_list_int    = '(A, T40, ":: ", T50, 100(I0,:,", "))'
-  character(len=100)   :: format_list_single = '(A, T40, ":: ", T50, 100(G0,:,", "))'
-  character(len=100)   :: format_list_double = '(A, T40, ":: ", T50, 100(G0,:,", "))'
-
+  character(len=100)   :: fmt_single  = '(A, T40, ":: ", T50, G0)'
+  character(len=100)   :: fmt_double  = '(A, T40, ":: ", T50, G0)'
+  character(len=100)   :: fmt_int     = '(A, T40, ":: ", T50, I0)'
+  character(len=100)   :: fmt_string  = '(A, T40, ":: ", T50, A)'
+  character(len=100)   :: fmt_logical = '(A, T40, ":: ", T50, L1)'
+  character(len=100)   :: fmt_list_int    = '(A, T40, ":: ", T50, 100(I0,:,", "))'
+  character(len=100)   :: fmt_list_single = '(A, T40, ":: ", T50, 100(G0,:,", "))'
+  character(len=100)   :: fmt_list_double = '(A, T40, ":: ", T50, 100(G0,:,", "))'
+  character(len=100)   :: fmt_message = '(A)'
   private
   public :: mpiwrite
 
@@ -60,6 +60,7 @@ module mpi_write
     module procedure mpi_write_list_integer
     module procedure mpi_write_list_single
     module procedure mpi_write_list_double
+    module procedure mpi_write_message
   end interface mpiwrite
 
 contains
@@ -68,9 +69,9 @@ contains
     integer, intent(in)           :: value
     integer                       :: iostat
     if (wid) then
-      write(ounit,fmt=format_int,iostat=iostat) message, value
+      write(ounit,fmt=fmt_int,iostat=iostat) message, value
     endif
-    if (iostat .ne. 0) stop "Error in writing to the output file "
+    if (iostat .ne. 0) stop "Error in writing integer to the output file "
     mpi_write_integer = iostat
     return
   end function mpi_write_integer
@@ -80,9 +81,9 @@ contains
     real(sp), intent(in)          :: value
     integer                       :: iostat
     if (wid) then
-      write(ounit,format_single,iostat=iostat) message, value
+      write(ounit,fmt_single,iostat=iostat) message, value
     endif
-    if (iostat .ne. 0) stop "Error in writing to the output file "
+    if (iostat .ne. 0) stop "Error in writing float to the output file "
     mpi_write_real = iostat
     return
   end function mpi_write_real
@@ -92,9 +93,9 @@ contains
     real(dp), intent(in)          :: value
     integer                       :: iostat
     if (wid) then
-      write(ounit,format_double,iostat=iostat) message, value
+      write(ounit,fmt_double,iostat=iostat) message, value
     endif
-    if (iostat .ne. 0) stop "Error in writing to the output file "
+    if (iostat .ne. 0) stop "Error in writing double precision to the output file "
     mpi_write_realdp = iostat
     return
   end function mpi_write_realdp
@@ -104,9 +105,9 @@ contains
     character(len=*), intent(in)            :: value
     integer                                 :: iostat
     if (wid) then
-      write(ounit,format_string,iostat=iostat) message, value
+      write(ounit,fmt_string,iostat=iostat) message, value
     endif
-    if (iostat .ne. 0) stop "Error in writing to the output file "
+    if (iostat .ne. 0) stop "Error in writing string to the output file "
     mpi_write_string = iostat
     return
   end function mpi_write_string
@@ -116,9 +117,9 @@ contains
     logical, intent(in)           :: value
     integer                       :: iostat
     if (wid) then
-      write(ounit,format_logical,iostat=iostat) message, value
+      write(ounit,fmt_logical,iostat=iostat) message, value
     endif
-    if (iostat .ne. 0) stop "Error in writing to the output file "
+    if (iostat .ne. 0) stop "Error in writing boolean to the output file "
     mpi_write_logical = iostat
     return
   end function mpi_write_logical
@@ -128,7 +129,7 @@ contains
     integer, intent(in),dimension(:):: value
     integer                         :: iostat
     if (wid) then
-      write(ounit,fmt=format_list_int,iostat=iostat) message, value
+      write(ounit,fmt=fmt_list_int,iostat=iostat) message, value
     endif
     if (iostat .ne. 0) stop "Error in writing list of integers to the output file "
     mpi_write_list_integer = iostat
@@ -140,7 +141,7 @@ contains
     real, intent(in),dimension(:)   :: value
     integer                         :: iostat
     if (wid) then
-      write(ounit,fmt=format_list_single,iostat=iostat) message, value
+      write(ounit,fmt=fmt_list_single,iostat=iostat) message, value
     endif
     if (iostat .ne. 0) stop "Error in writing list of floats to the output file "
     mpi_write_list_single = iostat
@@ -152,12 +153,23 @@ contains
     real(dp), intent(in),dimension(:)   :: value
     integer                             :: iostat
     if (wid) then
-      write(ounit,fmt=format_list_double,iostat=iostat) message, value
+      write(ounit,fmt=fmt_list_double,iostat=iostat) message, value
     endif
     if (iostat .ne. 0) stop "Error in writing list of doubles to the output file "
     mpi_write_list_double = iostat
     return
   end function mpi_write_list_double
+
+  integer function mpi_write_message(message)
+    character(len=*), intent(in)  :: message
+    integer                       :: iostat
+    if (wid) then
+      write(ounit,fmt=fmt_message,iostat=iostat) message
+    endif
+    if (iostat .ne. 0) stop "Error in writing a message to the output file "
+    mpi_write_message = iostat
+    return
+  end function mpi_write_message
 
 
 end module mpi_write
@@ -203,7 +215,9 @@ PROGRAM SAMPLE
 
 
 ! Handle/Use fdf structure
-!  if (fdf_defined('new-style')) err = mpiwrite("[strings] just a string without value", "")
+  ! if (fdf_defined('new-style')) then
+  !   err = mpiwrite("[strings] just a string without value")
+  ! endif
 
   na = fdf_integer('NumberOfAtoms', 0)
   err = mpiwrite("[integer] Number of atoms", na)
@@ -231,6 +245,26 @@ PROGRAM SAMPLE
   else
      write(*,*)'MyList was not recognized'
   end if
+
+
+! a block of list of integers
+  if ( fdf_block('ListBlock',bfdf) ) then
+     i = 0
+     do while ( fdf_bline(bfdf,pline) )
+        i = i + 1
+        na = fdf_bnlists(pline)
+        !write(*,'(2(a,i0),a)') 'Listblock line: ',i,' has ',na,' lists'
+        do ia = 1 , na
+           j = -1
+           call fdf_blists(pline,ia,j,isa)
+           !write(*,'(tr5,2(a,i0),a)') 'list ',ia,' has ',j,' entries'
+           call fdf_blists(pline,ia,j,isa)
+           err = mpiwrite("[list][integers] list of integers   ", isa(1:j))
+        end do
+     end do
+  end if
+
+
 
 ! list of single precision floats NOT IMPLEMENTED YET
   ! if ( fdf_islreal('MyListReal') .and. fdf_islist('MyListReal') &
