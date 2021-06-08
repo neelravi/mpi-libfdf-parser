@@ -1,0 +1,233 @@
+ ionode within mpi loop  F           1           4
+ ionode outside  F           1           4           1           1
+ do i come inside the mpi part in fdf
+ ionode within mpi loop  F           2           4
+ ionode outside  F           2           4           1           1
+ do i come inside the mpi part in fdf
+ ionode within mpi loop  F           3           4
+ ionode outside  F           3           4           1           1
+ do i come inside the mpi part in fdf
+ ionode within mpi loop  T           0           4
+ ionode outside  T           0           4           1           1
+ do i come inside the mpi part in fdf
+ inside the sample interface file 
+ New-style stuff
+ Examples: na =           3
+ Name of file:Some file           
+ inside the sample interface file 
+ inside the sample interface file 
+ inside the sample interface file 
+ MeshCutOff:   36.7489942245322     
+ New-style stuff
+ New-style stuff
+ New-style stuff
+ Name of file:Some file           
+ Name of file:Some file           
+ Name of file:Some file           
+ Phonon Energy:  4.264063562998147E-002
+ #elems:          34
+ MeshCutOff:   36.7489942245322     
+ MeshCutOff:   36.7489942245322     
+ MeshCutOff:   36.7489942245322     
+ Phonon Energy:  4.264063562998147E-002
+ Phonon Energy:  4.264063562998147E-002
+ Phonon Energy:  4.264063562998147E-002
+ WmixValue:  0.5500000    
+ #elems:          34
+ #elems:          34
+ #elems:          34
+ Factor:   31400000000.0000     
+ WmixValue:  0.5500000    
+ WmixValue:  0.5500000    
+ WmixValue:  0.5500000    
+ Factor:   31400000000.0000     
+ Factor:   31400000000.0000     
+ Factor:   31400000000.0000     
+ Debug: F
+ Debug: F
+ Debug: F
+ Debug: F
+ Doit: F
+ Doit: F
+ Doit: F
+ Doit: F
+ AtomCoordsBlockDefined: T
+ AtomCoordsBlockDefined: T
+ AtomCoordsBlockDefined: T
+ AtomCoordsBlockDefined: T
+ AtomicCoordinatesAndAtomicSpecies:
+ AtomicCoordinatesAndAtomicSpecies:
+  0.000000  0.000000  0.000000    1
+ AtomicCoordinatesAndAtomicSpecies:
+  0.000000  0.000000  0.000000    1
+  1.431000  1.108000  0.000000    2
+ -1.431000  1.108000  0.000000    2
+  0.000000  0.000000  0.000000    1
+  1.431000  1.108000  0.000000    2
+ -1.431000  1.108000  0.000000    2
+  1.431000  1.108000  0.000000    2
+ -1.431000  1.108000  0.000000    2
+ AtomicInfo:
+  0.333000  0.000000  0.000000
+  1.500000  1.108000  0.000000
+ AtomicInfo:
+  0.333000  0.000000  0.000000
+  1.500000  1.108000  0.000000
+ -1.431000  1.108000  0.000000
+ AtomicInfo:
+  0.333000  0.000000  0.000000
+  1.500000  1.108000  0.000000
+ -1.431000  1.108000  0.000000
+ -1.431000  1.108000  0.000000
+ AtomicCoordinatesAndAtomicSpecies:
+  0.000000  0.000000  0.000000    1
+  1.431000  1.108000  0.000000    2
+ -1.431000  1.108000  0.000000    2
+ Other-Block (Forward):
+  Nh  1.500000  1.108000  0.000000
+  Ox  0.333000  0.000000  0.000000
+ Other-Block (Forward):
+  Nh  1.500000  1.108000  0.000000
+  Ox  0.333000  0.000000  0.000000
+  Pd -1.431000  1.108000  0.000000
+ Other-Block (Forward):
+  Nh  1.500000  1.108000  0.000000
+  Ox  0.333000  0.000000  0.000000
+  Pd -1.431000  1.108000  0.000000
+  Pd -1.431000  1.108000  0.000000
+ Other-Block (Backward):
+  Pd -1.431000  1.108000  0.000000
+  Ox  0.333000  0.000000  0.000000
+ Other-Block (Backward):
+  Pd -1.431000  1.108000  0.000000
+  Ox  0.333000  0.000000  0.000000
+  Nh  1.500000  1.108000  0.000000
+ Other-Block (Backward):
+  Pd -1.431000  1.108000  0.000000
+  Ox  0.333000  0.000000  0.000000
+  Nh  1.500000  1.108000  0.000000
+  Nh  1.500000  1.108000  0.000000
+ AtomicInfo:
+  0.333000  0.000000  0.000000
+  1.500000  1.108000  0.000000
+ -1.431000  1.108000  0.000000
+ Other-Block (Forward):
+  Nh  1.500000  1.108000  0.000000
+  Ox  0.333000  0.000000  0.000000
+  Pd -1.431000  1.108000  0.000000
+ Other-Block (Forward):
+  Nh  1.500000  1.108000  0.000000
+  Ox  0.333000  0.000000  0.000000
+  Pd -1.431000  1.108000  0.000000
+ Other-Block (Forward):
+  Nh  1.500000  1.108000  0.000000
+  Ox  0.333000  0.000000  0.000000
+  Pd -1.431000  1.108000  0.000000
+ Other-Block (Forward):
+  Nh  1.500000  1.108000  0.000000
+  Ox  0.333000  0.000000  0.000000
+  Pd -1.431000  1.108000  0.000000
+ Other-Block (Forward-with-rewind):
+  Nh  1.500000  1.108000  0.000000
+  Ox  0.333000  0.000000  0.000000
+  Pd -1.431000  1.108000  0.000000
+Listblock line: 1 has 3 lists
+ Other-Block (Forward-with-rewind):
+  Nh  1.500000  1.108000  0.000000
+  Ox  0.333000  0.000000  0.000000
+  Pd -1.431000  1.108000  0.000000
+Listblock line: 1 has 3 lists
+ Other-Block (Forward-with-rewind):
+  Nh  1.500000  1.108000  0.000000
+  Ox  0.333000  0.000000  0.000000
+  Pd -1.431000  1.108000  0.000000
+Listblock line: 1 has 3 lists
+     list 1 has 5 entries
+     list 1 has 5 entries
+     list 1 has 5 entries
+     list:  1 2 3 5 6
+     list:  1 2 3 5 6
+     list:  1 2 3 5 6
+     list 2 has 2 entries
+     list 2 has 2 entries
+     list:  -1 -3
+     list:  -1 -3
+     list 2 has 2 entries
+     list:  -1 -3
+ Other-Block (Backward):
+  Pd -1.431000  1.108000  0.000000
+  Ox  0.333000  0.000000  0.000000
+  Nh  1.500000  1.108000  0.000000
+     list 3 has 13 entries
+     list 3 has 13 entries
+     list 3 has 13 entries
+     list:  100 93 86 79 72 65 58 51 44 37 30 23 16
+     list:  100 93 86 79 72 65 58 51 44 37 30 23 16
+Listblock line: 2 has 2 lists
+     list:  100 93 86 79 72 65 58 51 44 37 30 23 16
+Listblock line: 2 has 2 lists
+Listblock line: 2 has 2 lists
+     list 1 has 6 entries
+     list 1 has 6 entries
+     list 1 has 6 entries
+     list:  1 2 3 4 5 4
+     list:  1 2 3 4 5 4
+     list:  1 2 3 4 5 4
+     list 2 has 4 entries
+     list 2 has 4 entries
+     list 2 has 4 entries
+     list:  10 14 18 3
+Listblock line: 3 has 1 lists
+     list:  10 14 18 3
+Listblock line: 3 has 1 lists
+     list:  10 14 18 3
+Listblock line: 3 has 1 lists
+     list 1 has 34 entries
+     list 1 has 34 entries
+     list 1 has 34 entries
+ Other-Block (Forward):
+  Nh  1.500000  1.108000  0.000000
+  Ox  0.333000  0.000000  0.000000
+  Pd -1.431000  1.108000  0.000000
+     list:  1 2 3 4 5 4 2 3 4 5 6 7 8 9 10 -2 -3 -4 -5 -6 -7 -8 -9 -10 -11 -12 -13 -14 -15 -16 -17 -18 -19 -20
+     list:  1 2 3 4 5 4 2 3 4 5 6 7 8 9 10 -2 -3 -4 -5 -6 -7 -8 -9 -10 -11 -12 -13 -14 -15 -16 -17 -18 -19 -20
+     list:  1 2 3 4 5 4 2 3 4 5 6 7 8 9 10 -2 -3 -4 -5 -6 -7 -8 -9 -10 -11 -12 -13 -14 -15 -16 -17 -18 -19 -20
+     MyList has 11 entries
+     MyList has 11 entries
+     MyList has 11 entries
+ Other-Block (Forward-with-rewind):
+  Nh  1.500000  1.108000  0.000000
+  Ox  0.333000  0.000000  0.000000
+  Pd -1.431000  1.108000  0.000000
+     MyList:  2 3 4 5 6 7 8 9 10 11 20
+     MyList:  2 3 4 5 6 7 8 9 10 11 20
+     MyList:  2 3 4 5 6 7 8 9 10 11 20
+Listblock line: 1 has 3 lists
+ externalentry is not a list
+ externalentry is not a list
+ externalentry is not a list
+     list 1 has 5 entries
+     list:  1 2 3 5 6
+     list 2 has 2 entries
+     list:  -1 -3
+ ExternalEntry:          99
+ ExternalEntry:          99
+     list 3 has 13 entries
+ ExternalEntry:          99
+     list:  100 93 86 79 72 65 58 51 44 37 30 23 16
+Listblock line: 2 has 2 lists
+     list 1 has 6 entries
+     list:  1 2 3 4 5 4
+ Axis: Polar | Enabled
+ Axis: Polar | Enabled
+ Axis: Polar | Enabled
+     list 2 has 4 entries
+     list:  10 14 18 3
+Listblock line: 3 has 1 lists
+     list 1 has 34 entries
+     list:  1 2 3 4 5 4 2 3 4 5 6 7 8 9 10 -2 -3 -4 -5 -6 -7 -8 -9 -10 -11 -12 -13 -14 -15 -16 -17 -18 -19 -20
+     MyList has 11 entries
+     MyList:  2 3 4 5 6 7 8 9 10 11 20
+ externalentry is not a list
+ ExternalEntry:          99
+ Axis: Polar | Enabled
