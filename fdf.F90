@@ -511,6 +511,7 @@ MODULE fdf
       integer(ip) :: ierr
 
 !------------------------------------------------------------------------- BEGIN
+      print *, "entering the MPI mode "
       call MPI_Initialized(mpiflag, ierr)
       if (ierr .ne. MPI_SUCCESS) then
         call die('FDF module: fdf_mpi_init', 'Error initializing MPI system.' // &
@@ -579,6 +580,7 @@ MODULE fdf
 !------------------------------------------------------------------------- BEGIN
 #ifdef CLUSTER
 !!      call fdf_readcluster(filein)
+      print*, "entering the cluster mode "
       call setup_fdf_cluster(filein)
 #elif defined(BLOCKING)
       call fdf_readblocking(filein)

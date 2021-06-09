@@ -10,13 +10,13 @@
 #
 # Architecture
 #
-FDF_ARCH=XLF 64bits PARALLEL
+FDF_ARCH=x86_64 64bits PARALLEL
 
 #
 # Compiling, linking flags
 #
 FC= mpiifort
-FFLAGS= -O0 -fpp -g -debug -traceback # -qstrict -qtune=ppc970 -qarch=ppc970 -q32
+FFLAGS= -O0 -fpp -g -debug -traceback #-qstrict -qtune=ppc970 -qarch=ppc970 -q32
 LDFLAGS=-O0 #-qstrict -qtune=ppc970 -qarch=ppc970 -q32
 
 

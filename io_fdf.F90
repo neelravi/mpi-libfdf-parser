@@ -1,6 +1,6 @@
 #define THIS_FILE "io_fdf.F90"
 !=====================================================================
-! 
+!
 ! This file is part of the FDF package.
 !
 ! This module implements an interface to the FORTRAN logical unit
@@ -120,7 +120,7 @@ MODULE io_fdf
 
           INQUIRE(unit=i, opened=used, iostat=iostat)
           if (iostat .ne. 0) used = .TRUE.
-          if (.not. used) then 
+          if (.not. used) then
             lun   = i
             found = .TRUE.
           endif

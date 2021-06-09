@@ -239,33 +239,33 @@ PROGRAM SAMPLE
 
 
 
-! list of integers
-  if ( fdf_islist('MyList') ) then
-     na = -1
-     call fdf_list('MyList',na,isa)
-     call fdf_list('MyList',na,isa)
-     err = mpiwrite("[list][integers] list of integers   ", isa(1:na))
-  else
-     write(*,*)'MyList was not recognized'
-  end if
+! ! list of integers
+!   if ( fdf_islist('MyList') ) then
+!      na = -1
+!      call fdf_list('MyList',na,isa)
+!      call fdf_list('MyList',na,isa)
+!      err = mpiwrite("[list][integers] list of integers   ", isa(1:na))
+!   else
+!      write(*,*)'MyList was not recognized'
+!   end if
 
 
-! a block of list of integers
-  if ( fdf_block('ListBlock',bfdf) ) then
-     i = 0
-     do while ( fdf_bline(bfdf,pline) )
-        i = i + 1
-        na = fdf_bnlists(pline)
-        !write(*,'(2(a,i0),a)') 'Listblock line: ',i,' has ',na,' lists'
-        do ia = 1 , na
-           j = -1
-           call fdf_blists(pline,ia,j,isa)
-           !write(*,'(tr5,2(a,i0),a)') 'list ',ia,' has ',j,' entries'
-           call fdf_blists(pline,ia,j,isa)
-           err = mpiwrite("[list][integers] list of integers   ", isa(1:j))
-        end do
-     end do
-  end if
+! ! a block of list of integers
+!   if ( fdf_block('ListBlock',bfdf) ) then
+!      i = 0
+!      do while ( fdf_bline(bfdf,pline) )
+!         i = i + 1
+!         na = fdf_bnlists(pline)
+!         !write(*,'(2(a,i0),a)') 'Listblock line: ',i,' has ',na,' lists'
+!         do ia = 1 , na
+!            j = -1
+!            call fdf_blists(pline,ia,j,isa)
+!            !write(*,'(tr5,2(a,i0),a)') 'list ',ia,' has ',j,' entries'
+!            call fdf_blists(pline,ia,j,isa)
+!            err = mpiwrite("[list][integers] list of integers   ", isa(1:j))
+!         end do
+!      end do
+!   end if
 
 
 
