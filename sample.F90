@@ -10,7 +10,8 @@ module mpiconf
   integer  :: idtask
   integer  :: nproc
   logical  :: wid
-  integer  :: MPIerror
+  integer  :: MPIerror, resultlen
+  character*(MPI_MAX_PROCESSOR_NAME) name
 
   private :: MPIerror
   public  :: idtask, nproc, wid
@@ -25,6 +26,8 @@ contains
       call MPI_Comm_Size( MPI_Comm_World, nproc, MPIerror )
       wid = (idtask==0)
       initialized = .true.
+      call mpi_get_processor_name(name, resultlen, MPIerror)
+      print*, "hostname ", name
     end if
 #endif
   end subroutine mpiconf_init
