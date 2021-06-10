@@ -256,14 +256,14 @@ PROGRAM SAMPLE
 
 
 ! list of integers
-  ! if ( fdf_islist('MyList') ) then
-  !    na = -1
-  !    call fdf_list('MyList',na,isa)
-  !    call fdf_list('MyList',na,isa)
-  !    err = mpiwrite("[list][integers] list of integers   ", isa(1:na))
-  ! else
-  !    write(*,*)'MyList was not recognized'
-  ! end if
+  if ( fdf_islist('MyList') ) then
+     na = -1
+     call fdf_list('MyList',na,isa)
+     call fdf_list('MyList',na,isa)
+     err = mpiwrite("[list][integers] list of integers   ", isa(1:na))
+  else
+     write(*,*)'MyList was not recognized'
+  end if
 
 
 ! ! a block of list of integers
