@@ -49,6 +49,7 @@ module mpi_write
   character(len=100)   :: fmt_message = '(A)'
   private
   public :: mpiwrite, wid
+  save ! this is very important
 
   interface mpiwrite
     module procedure mpi_write_integer
@@ -181,20 +182,20 @@ PROGRAM SAMPLE
   USE prec
   use mpiconf, only: idtask, nproc, wid
   use mpiconf, only: mpiconf_init
-
+  use mpi
   use mpi_write
   implicit none
 !--------------------------------------------------------------- Local Variables
   integer, parameter         :: maxa = 100
-  logical                    :: doit, debug, mpiflag
-  character(len=100)         :: fname
+  logical                    :: doit, debug, mpiflag, exist, opened, closed
+  character(len=100)         :: fname, file_data
   character(len=2)           :: axis, status
-  integer(sp)                :: i, j, ia, na, external_entry
-  integer(sp)                :: isa(maxa)
+  integer(sp)                :: i, j, ia, na, external_entry, iunit, iostat
+  integer(sp)                :: isa(maxa), MPIerror
   real(sp)                   :: wmix
   real(dp)                   :: cutoff, phonon_energy, factor
   real(dp)                   :: xa(3, maxa)
-  real(dp)                   :: listdp(maxa)
+  real(dp)                   :: listdp(maxa),  var1, var2, var3
   real(sp)                   :: listr(maxa)
   real                       :: calibration
   type(block_fdf)            :: bfdf
@@ -325,7 +326,31 @@ PROGRAM SAMPLE
      end do
   end if
 
+  if (wid) then
+    inquire(file="data.txt", exist=exist, opened=opened)
+    if (exist) then
+        open (newunit=iunit,file="data.txt", iostat=iostat, action='read' )
+        if (iostat .ne. 0) stop "Problem in opening the data file"
+    else
+        error stop " data file "// trim(file_data) // " does not exist."
+    endif
 
+
+    read(iunit,*) var1
+    read(iunit,*) var2
+    read(iunit,*) var3
+  endif
+
+  call MPI_Bcast(var1,1,MPI_Double_Precision,0,MPI_Comm_World,MPIerror)
+  call MPI_Bcast(var2,1,MPI_Double_Precision,0,MPI_Comm_World,MPIerror)
+  call MPI_Bcast(var3,1,MPI_Double_Precision,0,MPI_Comm_World,MPIerror)
+
+  if (idtask == 2 .or. idtask == 3 ) then
+    write(6,*) 'checking the broadcasted message var1 '
+    write(6,'(3(G0, 4x),a,i0)') var1, var2, var3, " from idtask = ", idtask
+    write(6,'(A)')
+    write(6,*) '------------------------------------------------------'
+  endif
 
 ! list of single precision floats NOT IMPLEMENTED YET
   ! if ( fdf_islreal('MyListReal') .and. fdf_islist('MyListReal') &
