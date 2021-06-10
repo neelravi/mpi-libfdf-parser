@@ -10,8 +10,7 @@ module mpiconf
   integer  :: idtask
   integer  :: nproc
   logical  :: wid
-  integer  :: MPIerror, resultlen
-  character*(MPI_MAX_PROCESSOR_NAME) name
+  integer  :: MPIerror
 
   private :: MPIerror
   public  :: idtask, nproc, wid
@@ -21,14 +20,10 @@ contains
   subroutine mpiconf_init()
 #ifdef _MPI_
     call mpi_init(ierr)
-    if (.not.initialized) then
-      call MPI_Comm_Rank( MPI_Comm_World, idtask, MPIerror )
-      call MPI_Comm_Size( MPI_Comm_World, nproc, MPIerror )
-      wid = (idtask==0)
-      initialized = .true.
-      call mpi_get_processor_name(name, resultlen, MPIerror)
-      print*, "hostname ", name
-    end if
+    call MPI_Comm_Rank( MPI_Comm_World, idtask, MPIerror )
+    call MPI_Comm_Size( MPI_Comm_World, nproc, MPIerror )
+    if (MPIerror /= 0) error stop " Error in initializing MPI "
+    wid = (idtask==0)
 #endif
   end subroutine mpiconf_init
 end module mpiconf
@@ -223,7 +218,9 @@ PROGRAM SAMPLE
   ! endif
 
   na = fdf_integer('NumberOfAtoms', 0)
-  err = mpiwrite("[integer] Number of atoms", na)
+  write(*,'(a,i0,a,i0)') " node id ", idtask, " of ", nproc
+  err = mpiwrite("[integer] Number of atoms (via calls) ", na)
+  if (wid) write(*,*) "[integer] Number of atoms ", na
 
   fname = fdf_string('NameOfFile', 'whatever')
   err = mpiwrite("[strings] Name of the file", fname)
@@ -237,17 +234,36 @@ PROGRAM SAMPLE
   debug = fdf_boolean('Debug', .TRUE.)
   err = mpiwrite("[boolean] debug flag", debug)
 
+  if (fdf_block('AtomicCoordinatesAndAtomicSpecies', bfdf)) then
+    ia = 1
+    do while((fdf_bline(bfdf, pline)) .and. (ia .le. na))
+      do i= 1, 3
+        xa(i,ia) = fdf_breals(pline, i)
+      enddo
+      isa(ia) = fdf_bintegers(pline, 1)
+      ia = ia + 1
+    enddo
+  endif
+
+  if (idtask == 1 .or. idtask == 2 .or. idtask == 3) then
+    write(6,*) 'Atomic Coordinates from the MPI process id :', idtask
+    do ia= 1, na
+      write(6,'(3F10.6,I5)') (xa(i,ia),i=1,3), isa(ia)
+    enddo
+  endif
 
 
-! ! list of integers
-!   if ( fdf_islist('MyList') ) then
-!      na = -1
-!      call fdf_list('MyList',na,isa)
-!      call fdf_list('MyList',na,isa)
-!      err = mpiwrite("[list][integers] list of integers   ", isa(1:na))
-!   else
-!      write(*,*)'MyList was not recognized'
-!   end if
+
+
+! list of integers
+  ! if ( fdf_islist('MyList') ) then
+  !    na = -1
+  !    call fdf_list('MyList',na,isa)
+  !    call fdf_list('MyList',na,isa)
+  !    err = mpiwrite("[list][integers] list of integers   ", isa(1:na))
+  ! else
+  !    write(*,*)'MyList was not recognized'
+  ! end if
 
 
 ! ! a block of list of integers
@@ -307,21 +323,6 @@ PROGRAM SAMPLE
 !   doit = fdf_defined('AtomicCoordinatesAndAtomicSpecies')
 !   write(6,*) 'AtomCoordsBlockDefined:', doit
 
-!   if (fdf_block('AtomicCoordinatesAndAtomicSpecies', bfdf)) then
-!     ia = 1
-!     do while((fdf_bline(bfdf, pline)) .and. (ia .le. na))
-!       do i= 1, 3
-!         xa(i,ia) = fdf_breals(pline, i)
-!       enddo
-!       isa(ia) = fdf_bintegers(pline, 1)
-!       ia = ia + 1
-!     enddo
-!   endif
-
-!   write(6,*) 'AtomicCoordinatesAndAtomicSpecies:'
-!   do ia= 1, na
-!     write(6,'(3F10.6,I5)') (xa(i,ia),i=1,3), isa(ia)
-!   enddo
 
 !   if (fdf_block('AtomicInfo', bfdf)) then
 !     ia = 1

@@ -511,7 +511,6 @@ MODULE fdf
       integer(ip) :: ierr
 
 !------------------------------------------------------------------------- BEGIN
-      print *, "entering the MPI mode "
       call MPI_Initialized(mpiflag, ierr)
       if (ierr .ne. MPI_SUCCESS) then
         call die('FDF module: fdf_mpi_init', 'Error initializing MPI system.' // &
@@ -580,7 +579,6 @@ MODULE fdf
 !------------------------------------------------------------------------- BEGIN
 #ifdef CLUSTER
 !!      call fdf_readcluster(filein)
-      print*, "entering the cluster mode "
       call setup_fdf_cluster(filein)
 #elif defined(BLOCKING)
       call fdf_readblocking(filein)
@@ -3282,7 +3280,6 @@ MODULE fdf
        call recreate_pline(pline,bufline)
        call fdf_addtoken(pline%line,pline)
     enddo
-    ! print *, "Processed: ", file_in%nlines, " lines."
 
   end subroutine recreate_fdf_struct
 
@@ -3314,7 +3311,7 @@ MODULE fdf
         bufferFDF(i:i+MAX_LENGTH-1) = s2arr(mark%str)
         mark => mark%next
       enddo
-
+      print *, " printing from fdf_sendInput cluster mode "
       call MPI_Bcast(file_in%nlines, 1,                                 &
                      MPI_INTEGER, rank, MPI_COMM_WORLD, ierr)
 
