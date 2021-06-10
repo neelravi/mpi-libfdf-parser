@@ -218,7 +218,7 @@ PROGRAM SAMPLE
   ! endif
 
   na = fdf_integer('NumberOfAtoms', 0)
-  write(*,'(a,i0,a,i0)') " node id ", idtask, " of ", nproc
+!  write(*,'(a,i0,a,i0)') " node id ", idtask, " of ", nproc
   err = mpiwrite("[integer] Number of atoms (via calls) ", na)
   if (wid) write(*,*) "[integer] Number of atoms ", na
 
@@ -245,7 +245,7 @@ PROGRAM SAMPLE
     enddo
   endif
 
-  if (idtask == 1 .or. idtask == 2 .or. idtask == 3) then
+  if (wid) then
     write(6,*) 'Atomic Coordinates from the MPI process id :', idtask
     do ia= 1, na
       write(6,'(3F10.6,I5)') (xa(i,ia),i=1,3), isa(ia)
