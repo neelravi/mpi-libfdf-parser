@@ -33,10 +33,11 @@ end module mpiconf
 
 module mpi_write
   use mpiconf,      only: wid
+  use iso_fortran_env, only: OUTPUT_UNIT
   implicit none
   integer, parameter   :: sp = kind(1.0)
   integer, parameter   :: dp = kind(1.0d0)
-  integer              :: ounit = 6  ! for the time being
+  integer              :: ounit = OUTPUT_UNIT  ! for the time being
   character(len=100)   :: fmt_single  = '(A, T40, ":: ", T50, G0)'
   character(len=100)   :: fmt_double  = '(A, T40, ":: ", T50, G0)'
   character(len=100)   :: fmt_int     = '(A, T40, ":: ", T50, I0)'
@@ -47,7 +48,7 @@ module mpi_write
   character(len=100)   :: fmt_list_double = '(A, T40, ":: ", T50, 100(G0,:,", "))'
   character(len=100)   :: fmt_message = '(A)'
   private
-  public :: mpiwrite
+  public :: mpiwrite, wid
 
   interface mpiwrite
     module procedure mpi_write_integer
@@ -188,7 +189,6 @@ PROGRAM SAMPLE
   logical                    :: doit, debug, mpiflag
   character(len=100)         :: fname
   character(len=2)           :: axis, status
-  character(2)               :: symbol(maxa)
   integer(sp)                :: i, j, ia, na, external_entry
   integer(sp)                :: isa(maxa)
   real(sp)                   :: wmix
@@ -201,7 +201,11 @@ PROGRAM SAMPLE
   type(parsed_line), pointer :: pline
 
   logical, save              :: initialized=.false.
-  integer                    :: err
+  integer                    :: err, natoms, ierr
+  real(dp), allocatable      :: cent(:,:)
+  character(2), allocatable  :: symbol(:)
+
+
 
 !------------------------------------------------------------------------- BEGIN
 
@@ -255,7 +259,7 @@ PROGRAM SAMPLE
 
 
 
-! list of integers
+!list of integers
   if ( fdf_islist('MyList') ) then
      na = -1
      call fdf_list('MyList',na,isa)
@@ -266,22 +270,60 @@ PROGRAM SAMPLE
   end if
 
 
-! ! a block of list of integers
-!   if ( fdf_block('ListBlock',bfdf) ) then
-!      i = 0
-!      do while ( fdf_bline(bfdf,pline) )
-!         i = i + 1
-!         na = fdf_bnlists(pline)
-!         !write(*,'(2(a,i0),a)') 'Listblock line: ',i,' has ',na,' lists'
-!         do ia = 1 , na
-!            j = -1
-!            call fdf_blists(pline,ia,j,isa)
-!            !write(*,'(tr5,2(a,i0),a)') 'list ',ia,' has ',j,' entries'
-!            call fdf_blists(pline,ia,j,isa)
-!            err = mpiwrite("[list][integers] list of integers   ", isa(1:j))
-!         end do
-!      end do
-!   end if
+  if (fdf_block('molecule', bfdf)) then
+    !   External file reading
+!        write(6,*) 'Beginning of molecular coordinates block  '
+        ia = 1
+
+        do while((fdf_bline(bfdf, pline)))
+!         get the integer from the first line
+          if ((pline%id(1) .eq. "i") .and. (pline%ntokens .eq. 1)) then        ! check if it is the only integer present in a line
+            natoms = fdf_bintegers(pline, 1)
+            if (wid) write(*,*) "Molecule block :: number of atoms  ", natoms
+          endif
+
+          if (.not. allocated(cent)) allocate(cent(3,natoms))
+          if (.not. allocated(symbol)) allocate(symbol(natoms))
+
+          if (pline%ntokens == 4) then
+            symbol(ia) = fdf_bnames(pline, 1)
+            do i= 1, 3
+              cent(i,ia) = fdf_bvalues(pline, i)
+            enddo
+            ia = ia + 1
+          endif
+        enddo
+
+
+  endif
+
+  if (wid) then
+    write(6,*) 'Coordinates from Molecule block: '
+    do ia= 1, natoms
+      write(6,'(A4,3F10.6)') symbol(ia), (cent(i,ia),i=1,3)
+    enddo
+
+    write(6,'(A)')
+    write(6,*) '------------------------------------------------------'
+  endif
+
+
+! a block of list of integers
+  if ( fdf_block('ListBlock',bfdf) ) then
+     i = 0
+     do while ( fdf_bline(bfdf,pline) )
+        i = i + 1
+        na = fdf_bnlists(pline)
+        !write(*,'(2(a,i0),a)') 'Listblock line: ',i,' has ',na,' lists'
+        do ia = 1 , na
+           j = -1
+           call fdf_blists(pline,ia,j,isa)
+           !write(*,'(tr5,2(a,i0),a)') 'list ',ia,' has ',j,' entries'
+           call fdf_blists(pline,ia,j,isa)
+           err = mpiwrite("[list][integers] list of integers   ", isa(1:j))
+        end do
+     end do
+  end if
 
 
 
@@ -436,6 +478,6 @@ PROGRAM SAMPLE
 
 ! Shutdown and deallocates fdf structure
   call fdf_shutdown()
-
+  call mpi_finalize(ierr)
 !----------------------------------------------------------------------------END
 END PROGRAM SAMPLE

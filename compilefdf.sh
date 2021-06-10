@@ -8,7 +8,8 @@ echo " mpirun -np 4 ./sample "
 echo " ___________________________________________________________________ "
 
 for i in {1..1000}
-do 
+do
+echo " Running the same code $i out of 100 times "	
 mpirun -print-all-exitcodes -np 4 ./sample
 #mpirun -print-all-exitcodes  -machinefile hostfile -np 30 ./sample
 if test $? -eq 0 
