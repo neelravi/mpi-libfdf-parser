@@ -4,13 +4,13 @@ echo " make lib "
 make lib
 echo " make sample "
 make sample
-echo " mpirun -np 4 ./sample "
+echo " mpirun -np 16 ./sample "
 echo " ___________________________________________________________________ "
 
-for i in {1..1000}
+for i in {1..1}
 do
-echo " Running the same code $i out of 100 times "	
-mpirun -print-all-exitcodes -np 4 ./sample
+echo " Running the same code $i times "	
+mpirun -print-all-exitcodes -np 16 ./sample
 #mpirun -print-all-exitcodes  -machinefile hostfile -np 30 ./sample
 if test $? -eq 0 
 then

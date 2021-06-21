@@ -194,9 +194,9 @@ PROGRAM SAMPLE
   integer(sp)                :: isa(maxa), MPIerror
   real(sp)                   :: wmix
   real(dp)                   :: cutoff, phonon_energy, factor
-  real(dp)                   :: xa(3, maxa)
+  real(dp)                   :: xa(3, maxa), weights(10)
   real(dp)                   :: listdp(maxa),  var1, var2, var3
-  real(sp)                   :: listr(maxa)
+  real(dp)                   :: listr(maxa)
   real                       :: calibration
   type(block_fdf)            :: bfdf
   type(parsed_line), pointer :: pline
@@ -309,23 +309,6 @@ PROGRAM SAMPLE
   endif
 
 
-! a block of list of integers
-  if ( fdf_block('ListBlock',bfdf) ) then
-     i = 0
-     do while ( fdf_bline(bfdf,pline) )
-        i = i + 1
-        na = fdf_bnlists(pline)
-        !write(*,'(2(a,i0),a)') 'Listblock line: ',i,' has ',na,' lists'
-        do ia = 1 , na
-           j = -1
-           call fdf_blists(pline,ia,j,isa)
-           !write(*,'(tr5,2(a,i0),a)') 'list ',ia,' has ',j,' entries'
-           call fdf_blists(pline,ia,j,isa)
-           err = mpiwrite("[list][integers] list of integers   ", isa(1:j))
-        end do
-     end do
-  end if
-
   if (wid) then
     inquire(file="data.txt", exist=exist, opened=opened)
     if (exist) then
@@ -353,20 +336,29 @@ PROGRAM SAMPLE
   endif
 
 ! list of single precision floats NOT IMPLEMENTED YET
-  ! if ( fdf_islreal('MyListReal') .and. fdf_islist('MyListReal') &
-  !     .and. (.not. fdf_islinteger('MyListReal')) ) then
-  !   na = -1
-  !   call fdf_list('MyListReal',na,listr)
-  !   if ( na < 2 ) stop 1
-  !   call fdf_list('MyListReal',na,listr)
-  !   err = mpiwrite("[list][floats] list of single floats   ", listr(1:na))
-  ! else
-  !   write(*,*)'MyListR was not recognized'
-  !   stop 1
-  ! end if
+  if ( fdf_islreal('MyListReal') .and. fdf_islist('MyListReal') &
+      .and. (.not. fdf_islinteger('MyListReal')) ) then
+    na = -1
+    call fdf_list('MyListReal',na,listr)
+    if ( na < 2 ) stop 1
+    call fdf_list('MyListReal',na,listr)
+    err = mpiwrite("[list][floats] list of single floats   ", listr(1:na))
+  else
+    write(*,*)'MyListR was not recognized'
+    stop 1
+  end if
 
 
 
+  if ( fdf_islreal('weights') .and. fdf_islist('weights') &
+  .and. (.not. fdf_islinteger('weights')) ) then
+i = -1
+call fdf_list('weights',i,weights)
+!write(ounit,'(tr1,a,i0,a)') 'weights has ',i,' entries'
+if ( i < 2 ) stop 1
+call fdf_list('weights',i,weights)
+err = mpiwrite( 'Weights : ', weights(1:i))
+  endif
 
 
 

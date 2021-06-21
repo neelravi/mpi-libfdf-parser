@@ -1,18 +1,22 @@
-!=====================================================================
-!
-! This file is part of the FDF package.
-!
-! This module provides useful functions and subroutines for FDF library.
-! At this moment this module contains functions for:
-!
-!   a) String manipulation
-!   b) Warning, Die (Abort/Terminate) operations
-!
-!
-! September 2007
-!
-!
-!=====================================================================
+#if defined HAVE_CONFIG_H
+#  include "config.h"
+#endif
+!>
+!!=====================================================================
+!!
+!! This file is part of the FDF package.
+!!
+!! This module provides useful functions and subroutines for FDF library.
+!! At this moment this module contains functions for:
+!!
+!!   a) String manipulation
+!!   b) Warning, Die (Abort/Terminate) operations
+!!
+!!
+!! September 2007
+!!
+!!
+!!=====================================================================
 
 #define ERROR_UNIT  0
 #define OUTPUT_UNIT 6
@@ -35,7 +39,7 @@ MODULE utils
   public :: warn, die
 
 ! Maximum size of a string
-  integer(ip), parameter, public :: MAX_LENGTH = 132
+  integer(ip), parameter, public :: MAX_LENGTH = 256
 
   CONTAINS
 
@@ -236,7 +240,8 @@ MODULE utils
       character(*), intent(in) :: string
 
 !-------------------------------------------------------------- Output Variables
-      integer(ip)              :: s2i
+!      integer(ip)              :: s2i
+      integer(i16)             :: s2i
 
 !--------------------------------------------------------------- Local Variables
       integer(ip)              :: ierr
@@ -245,7 +250,7 @@ MODULE utils
       read(string, fmt=*, iostat=ierr) s2i
       if (ierr .ne. 0) then
         call die('UTILS module: s2i', 'Integer conversion error',       &
-                 "fdf/utils.F90", __LINE__, ERROR_UNIT)
+                 'utils.F90', __LINE__, ERROR_UNIT)
       endif
 
       RETURN
@@ -270,7 +275,7 @@ MODULE utils
       read(string, fmt=*, iostat=ierr) s2r
       if (ierr .ne. 0) then
         call die('UTILS module: s2r', 'Real conversion error',          &
-                 "fdf/utils.F90", __LINE__, ERROR_UNIT)
+                 'utils.F90', __LINE__, ERROR_UNIT)
       endif
 
       RETURN
@@ -374,7 +379,7 @@ MODULE utils
 !------------------------------------------------------------------------- BEGIN
       if (num > 99999 .OR. num < 0) then
         call die('UTILS module: i2s', 'Number is out of range',         &
-                 "fdf/utils.F90", __LINE__, ERROR_UNIT)
+                 'utils.F90', __LINE__, ERROR_UNIT)
       endif
 
       zero = ICHAR('0')  ! 48 is the ascii code of zero
