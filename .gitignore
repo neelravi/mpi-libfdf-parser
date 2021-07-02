@@ -1,0 +1,8 @@
+# files generated during compilation
+*.o
+*.mod
+*.a
+*.i90
+*.log
+sample
+*.out
