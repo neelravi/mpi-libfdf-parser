@@ -222,6 +222,9 @@ PROGRAM SAMPLE
   !   err = mpiwrite("[strings] just a string without value")
   ! endif
 
+  err = mpiwrite(" node id         ", idtask)
+  err = mpiwrite(" total processes ", nproc)
+
   na = fdf_integer('NumberOfAtoms', 0)
 !  write(*,'(a,i0,a,i0)') " node id ", idtask, " of ", nproc
   err = mpiwrite("[integer] Number of atoms (via calls) ", na)
