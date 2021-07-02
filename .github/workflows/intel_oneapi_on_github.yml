@@ -1,0 +1,36 @@
+name: Intel OneAPI build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+jobs:
+  build_intel_champ_fparser:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+    - uses: actions/checkout@v2
+    - name: setup repo
+      run: |
+        wget https://apt.repos.intel.com/intel-gpg-keys/GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+        sudo apt-key add GPG-PUB-KEY-INTEL-SW-PRODUCTS-2023.PUB
+        sudo echo "deb https://apt.repos.intel.com/oneapi all main" | sudo tee /etc/apt/sources.list.d/oneAPI.list
+        sudo apt-get update
+    - name: install
+      run: |
+        sudo apt-get install -y intel-oneapi-common-vars
+        sudo apt-get install -y intel-oneapi-compiler-fortran
+        sudo apt-get install -y intel-oneapi-mpi
+        sudo apt-get install -y intel-oneapi-mpi-devel
+
+    - name: Compile and run
+      run: |
+        source /opt/intel/oneapi/setvars.sh
+        which mpiifort
+        MPIRUN=`which mpirun`
+        echo "mpirun used is " $MPIRUN
+        ./compilefdf.sh
+
