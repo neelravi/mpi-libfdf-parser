@@ -15,6 +15,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Compile and run
       run: |
+        . /opt/intel/oneapi/setvars.sh
         ./compilefdf.sh
-        echo "Build using Intel oneAPI compilers is sucessfull"
+        echo "Build using Intel oneAPI compilers is successfull"
 
