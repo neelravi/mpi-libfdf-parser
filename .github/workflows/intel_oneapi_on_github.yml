@@ -30,9 +30,14 @@ jobs:
     - name: Compile and run
       run: |
         source /opt/intel/oneapi/setvars.sh
-        printenv >> $GITHUB_ENV
         which mpiifort
         MPIRUN=`which mpirun`
         echo "mpirun used is " $MPIRUN
-        ./compilefdf.sh
+        ./compilefdf.sh | tee test.log
 
+    - name: "Upload results calculations"
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-results-01
+        path: tests.log
+        retention-days: 1
